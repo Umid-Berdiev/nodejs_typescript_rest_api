@@ -6,19 +6,19 @@ import crypto, { BinaryLike } from "crypto";
 import fromBase64 from "base64url";
 import { User } from "../interfaces/User";
 
-export const index = (request: Request, response: Response) => {
+export const blogs = (request: Request, response: Response) => {
   const blogs = [
     {
       title: "Yoshi finds eggs",
-      snippet: "Lorem ipsum dolor sit amet consectetur.",
+      body: "Lorem ipsum dolor sit amet consectetur.",
     },
     {
       title: "Mario finds stars",
-      snippet: "Lorem ipsum dolor sit amet consectetur.",
+      body: "Lorem ipsum dolor sit amet consectetur.",
     },
     {
       title: "How to defeat bowser",
-      snippet: "Lorem ipsum dolor sit amet consectetur.",
+      body: "Lorem ipsum dolor sit amet consectetur.",
     },
   ];
 
@@ -125,8 +125,10 @@ export const deleteUser = (request: Request, response: Response) => {
 
 // login route
 export const loginUser = async (request: Request, response: Response) => {
+  // response.header("Access-Control-Allow-Origin", "*");
   const body = request.body;
   // console.log("body: ", body);
+  // response.json({ body });
 
   pool.query(
     "SELECT * FROM users WHERE email = $1",
@@ -166,7 +168,9 @@ export const loginUser = async (request: Request, response: Response) => {
             delete user.password;
             response
               .status(201)
-              .header({ Authorization: token })
+              .header({
+                Authorization: token,
+              })
               .json({ token, ...user });
           }
         );
