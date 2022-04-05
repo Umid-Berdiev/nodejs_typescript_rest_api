@@ -143,6 +143,7 @@ export const loginUser = async (request: Request, response: Response) => {
         body.password,
         result.rows[0]?.password
       );
+      
       if (validPassword) {
         const user = result.rows[0];
 

@@ -45,9 +45,10 @@ const wsServer = new WebSocket.Server({
 
 wsServer.on("connection", (ws) => {
   ws.on("message", (msg) => {
+    const text = msg.toString();
     wsServer.clients.forEach((client) => {
-      if (client.readyState === ws.OPEN) {
-        client.send(msg.toString());
+      if (client.readyState === ws.OPEN && client !== ws) {
+        client.send(text);
       }
     });
   });
