@@ -12,7 +12,6 @@ import {
 } from "./database/queries";
 import auth from "./middleware/auth";
 import cors from "cors";
-import useAuth from "./features/useAuth";
 
 const app = express();
 const port = 8888;
@@ -44,22 +43,19 @@ const wsServer = new WebSocket.Server({
 });
 
 wsServer.on("connection", (ws) => {
-  ws.on("message", (msg) => {
-    const text = msg.toString();
+  ws.on("message", (data) => {
+    // const obj = JSON.parse(data);
+    console.log("data: ", data);
+
     wsServer.clients.forEach((client) => {
       if (client.readyState === ws.OPEN && client !== ws) {
-        client.send(text);
+        client.send(data.toString());
       }
     });
   });
 });
 
 httpServer.on("upgrade", async function upgrade(request, socket, head) {
-  // accepts half requests and rejects half. Reload browser page in case of rejection
-  // if (Math.random() > 0.5) {
-  //   return socket.end("HTTP/1.1 401 Unauthorized\r\n", "ascii"); //proper connection close in case of rejection
-  // }
-
   //emit connection when request accepted
   wsServer.handleUpgrade(request, socket, head, function done(ws) {
     wsServer.emit("connection", ws, request);
