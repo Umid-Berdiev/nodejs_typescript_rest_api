@@ -12,9 +12,10 @@ import {
 } from "./database/queries";
 import auth from "./middleware/auth";
 import cors from "cors";
+import useAuth from "./features/useAuth";
 
 const app = express();
-const port = 8889;
+const port = 8888;
 
 app.use(bodyParser.json());
 app.use(cors());
