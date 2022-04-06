@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import WebSocket from "ws";
+import { WebSocketServer } from "ws";
 import bodyParser from "body-parser";
 import {
   blogs,
@@ -12,6 +12,7 @@ import {
 } from "./database/queries";
 import auth from "./middleware/auth";
 import cors from "cors";
+import { isArrayBuffer } from "util/types";
 
 const app = express();
 const port = 8888;
@@ -38,18 +39,18 @@ const httpServer = app.listen(port, () => {
   console.log(`App running on port ${port}.`);
 });
 
-const wsServer = new WebSocket.Server({
-  noServer: true,
-});
+const wsServer = new WebSocketServer({ port: 8887 });
 
 wsServer.on("connection", (ws) => {
   ws.on("message", (data) => {
-    // const obj = JSON.parse(data);
-    console.log("data: ", data);
+    const content = JSON.parse(data.toString());
+    console.log("data: ", content);
 
     wsServer.clients.forEach((client) => {
       if (client.readyState === ws.OPEN && client !== ws) {
-        client.send(data.toString());
+        if (content.type === "attachment") {
+          client.send(data.toString());
+        } else client.send(data.toString());
       }
     });
   });
