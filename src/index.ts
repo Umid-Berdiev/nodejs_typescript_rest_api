@@ -65,42 +65,36 @@ wsServer.on("request", function (request: any) {
   console.log(new Date() + " Connection accepted.");
   // console.log("request: ", request.key);
   clients.push(connection);
-  connection.on(
-    "message",
-    function (message: {
-      type: string;
-      utf8Data: string;
-      binaryData: { length: string };
-    }) {
-      // console.log('received msg: ', message);
+  connection.on("message", function (message: any) {
+    console.log("received msg: ", message);
 
-      clients.forEach(
-        (client: {
-          readyState: any;
-          sendUTF: (arg0: string) => void;
-          sendBytes: (arg0: { length: string }) => void;
-        }) => {
-          if (client.readyState === connection.OPEN && client !== connection) {
-            if (message.type === "utf8") {
-              console.log("Received Message: " + message.utf8Data);
-              client.sendUTF(message.utf8Data);
-            } else if (message.type === "binary") {
-              console.log(
-                "Received Binary Message of " +
-                  message.binaryData.length +
-                  " bytes"
-              );
-              client.sendBytes(message.binaryData);
-            }
+    clients.forEach(
+      (client: {
+        readyState: any;
+        sendUTF: (arg0: string) => void;
+        sendBytes: (arg0: { length: string }) => void;
+      }) => {
+        if (client.readyState === connection.OPEN && client !== connection) {
+          if (message.type === "utf8") {
+            console.log("Received Message: " + message.utf8Data);
+            client.sendUTF(message.utf8Data);
+          } else if (message.type === "binary") {
+            console.log(
+              "Received Binary Message of " +
+                message.binaryData.length +
+                " bytes"
+            );
+            client.sendBytes(message.binaryData);
           }
         }
-      );
-    }
-  );
+      }
+    );
+  });
   connection.on("close", function (reasonCode: any, description: any) {
     console.log(
       new Date() + " Peer " + connection.remoteAddress + " disconnected."
     );
+    clients.filter((client) => client !== connection);
   });
 });
 
